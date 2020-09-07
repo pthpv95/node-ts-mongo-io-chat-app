@@ -1,16 +1,14 @@
-import express from "express"
 import bodyParser from "body-parser"
+import express from "express"
 import "./db/mongoose"
-import { ObjectId } from "mongodb"
 import { User } from "./models/user"
 import messages from "./routes/message"
 import user from "./routes/user"
 // const fs = require("fs")
-
 // let messagesData: any = []
 // for (let index = 0; index < 100; index++) {
 //   const element: any = {
-//     text: "message " + index,
+//     title: "message " + index,
 //     attachmentUrl: "",
 //     conversationId: new ObjectId(),
 //     type: 0,
@@ -33,7 +31,7 @@ io.on("connection", (client: any) => {
 
 app.use(bodyParser.json())
 
-app.use('/api/messages', messages)
+app.use("/api/messages", messages)
 app.use("/api/users", user)
 const port = 3000
 
@@ -42,8 +40,6 @@ app.get("/", async (req: express.Request, res: express.Response) => {
   console.log(users)
   res.send(users)
 })
-
-
 
 app.listen(port, () => {
   console.log(`Chat app listening at http://localhost:${port}`)

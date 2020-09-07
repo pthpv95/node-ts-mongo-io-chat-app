@@ -1,12 +1,12 @@
 import mongoose, {Schema} from "mongoose"
 
 var UserContactSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     required: true,
   },
   contacts: {
-    type: [Schema.Types.ObjectId],
+    type: [Schema.Types.Array],
     required: true,
   }
 })

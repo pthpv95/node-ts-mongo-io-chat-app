@@ -10,16 +10,23 @@ interface IConversation extends Document {
 const ConversationSchema = new Schema({
   title: {
     type: String,
+    required: true
   },
   memberIds: {
     type: [Schema.Types.ObjectId],
+    required: true,
   },
   createdBy: {
     type: Schema.Types.ObjectId,
+    required: true,
   },
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  type: {
+    type: Schema.Types.Number,
+    required: true,
   },
 })
 

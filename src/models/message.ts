@@ -1,12 +1,12 @@
 import mongoose, { Schema, Document } from "mongoose"
 
-interface IMessage extends Document {
+export interface IMessage extends Document {
   text: string
   attachmentUrl: string
   conversationId: string
   type: number
   createdBy: string
-  created: Date;
+  createdAt: Date
 }
 
 const MessageSchema = new Schema({
@@ -17,7 +17,7 @@ const MessageSchema = new Schema({
     type: String,
   },
   conversationId: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
     required: true,
   },
   type: {
@@ -25,11 +25,11 @@ const MessageSchema = new Schema({
     required: true,
   },
   createdBy: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
   },
-  created: {
-    type: Date,
-    default: Date.now
+  createdAt: {
+    type: Schema.Types.Number,
+    default: Date.now(),
   },
 })
 

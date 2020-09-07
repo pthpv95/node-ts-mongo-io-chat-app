@@ -1,10 +1,11 @@
 import express from "express"
 var router = express.Router()
-import { User } from "../models/user"
+import { getUser } from "../services/user"
 
-router.get("/", async (req, res) => {
-  var users = await User.findOne()
-  res.send(users)
+router.get("/:userId", async (req, res) => {
+  const userId = req.params.userId
+  var user = await getUser(userId) || []
+  res.send(user)
 })
 
 export default router
