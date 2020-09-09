@@ -47,16 +47,20 @@ export interface CreateMessageInput {
   conversationId: string
 }
 
-const getConversationInfo = async (conversationId: string, cursor?: number, limit: number = 3) => {
+const getConversationInfo = async (
+  conversationId: string,
+  cursor?: number,
+  limit: number = 3
+) => {
   var conversation = await Conversation.findById(conversationId)
   if (conversation) {
     let predicate: any = {
-      conversationId
+      conversationId,
     }
-    if(cursor){
+    if (cursor) {
       predicate = {
         ...predicate,
-        _id: {$lt: cursor}
+        _id: { $lt: cursor },
       }
     }
 
@@ -92,7 +96,22 @@ const getUserContacts = (id: string) => {}
 const createMessage = async (input: CreateMessageInput): Promise<any> => {
   var message = new Message(input)
   await message.save()
-  return message;
+  return message
 }
 
-export { getConversationInfo, createMessage }
+var createConversation = async (
+  title: string,
+  createdBy: string,
+  memberIds: string[]
+) => {
+  var conversation = new Conversation({
+    title,
+    createdBy,
+    memberIds,
+  })
+
+  await conversation.save()
+  return conversation
+}
+
+export { getConversationInfo, createMessage, createConversation }

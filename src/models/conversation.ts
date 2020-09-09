@@ -10,7 +10,7 @@ interface IConversation extends Document {
 const ConversationSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   memberIds: {
     type: [Schema.Types.ObjectId],
@@ -21,12 +21,13 @@ const ConversationSchema = new Schema({
     required: true,
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: Schema.Types.Number,
+    default: Date.now(),
   },
   type: {
     type: Schema.Types.Number,
     required: true,
+    default: 0 // private: 0 | group: 1
   },
 })
 
