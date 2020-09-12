@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 mongoose.Promise = global.Promise
+//mongoose.set("debug", true)
 
 const url = "mongodb://localhost:27017/chatapp"
 

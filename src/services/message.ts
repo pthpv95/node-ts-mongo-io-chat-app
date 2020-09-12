@@ -1,15 +1,18 @@
 import { Conversation } from "../models/conversation"
 import { IMessage, Message } from "../models/message"
+import _ from 'lodash'
 
 class ConversationDTO {
-  constructor(id: string, title: string, messages: MessageDTO[] = []) {
+  constructor(id: string, title: string, messages: MessageDTO[] = [], nextCursor: string) {
     this.id = id
     this.title = title
     this.messages = messages
+    this.nextCursor = nextCursor
   }
 
   id: string
   title: string
+  nextCursor: string;
   messages: MessageDTO[]
 }
 
@@ -18,28 +21,30 @@ class MessageDTO {
     id: string,
     text: string,
     attachmentUrl: string,
-    type: number,
+    messageType: number,
     createdBy: string,
-    createdAt: Date
+    createdAt: Date,
+    isReponse: boolean
   ) {
     this.id = id
     this.text = text
     this.attachmentUrl = attachmentUrl
-    this.type = type
+    this.messageType = messageType
     this.createdBy = createdBy
     this.createdAt = createdAt
+    this.isReponse = isReponse
   }
 
   id: string
   text: IMessage["text"]
   attachmentUrl: IMessage["attachmentUrl"]
-  type: IMessage["type"]
+  messageType: IMessage["type"]
   createdBy: IMessage["createdBy"]
   createdAt: IMessage["createdAt"]
+  isReponse: boolean
 }
 
 export interface CreateMessageInput {
-  id: string
   text: string
   attachmentUrl: string
   type: number
@@ -48,6 +53,7 @@ export interface CreateMessageInput {
 }
 
 const getConversationInfo = async (
+  userId: string,
   conversationId: string,
   cursor?: number,
   limit: number = 3
@@ -68,24 +74,32 @@ const getConversationInfo = async (
       .sort({ _id: -1 })
       .limit(limit)
 
+    let nextCursor: any = null
     if (messages) {
+      if (messages.length >= limit) {
+        nextCursor = _.last(messages)?.id
+      }
+
+      const messagesDTO = messages.map((message) => {
+        return new MessageDTO(
+          message.id,
+          message.text,
+          message.attachmentUrl,
+          message.type,
+          message.createdBy,
+          message.createdAt,
+          message.createdBy !== userId
+        )
+      })
       return new ConversationDTO(
         conversation.id,
         conversation.title,
-        messages.map((message) => {
-          return new MessageDTO(
-            message.id,
-            message.text,
-            message.attachmentUrl,
-            message.type,
-            message.createdBy,
-            message.createdAt
-          )
-        })
+        _.orderBy(messagesDTO, mes => mes.createdAt),
+        nextCursor
       )
     }
 
-    return new ConversationDTO(conversation.id, conversation.title)
+    return new ConversationDTO(conversation.id, conversation.title, [], nextCursor)
   }
 
   throw new Error("Conversation not found")

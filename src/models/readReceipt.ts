@@ -6,23 +6,20 @@ interface IReadReceipt extends Document {
   seenBy: string
 }
 
-const readReceiptSchema = new Schema({
+const ReadReceiptSchema = new Schema({
   conversationId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
   messageId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
   seenBy: {
-    type: Schema.Types.ObjectId,
+    type: String,
   },
 })
 
-const ReadReceipt = mongoose.model<IReadReceipt>(
-  "readReceipt",
-  readReceiptSchema
-)
+const ReadReceipt = mongoose.model<IReadReceipt>("read_receipt", ReadReceiptSchema)
 
 export { ReadReceipt }

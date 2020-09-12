@@ -13,23 +13,32 @@ router.get("/", async (req, res) => {
   res.send(messages)
 })
 
-router.post("/:conversationId", async (req, res) => {
-  var body: CreateMessageInput = _.pick(req.body, [
+router.post("/:conversationId/create", async (req, res) => {
+  const body: any = _.pick(req.body, [
     "text",
     "attachmentUrl",
     "type",
     "createdBy",
   ])
 
-  var conversationId = req.params.conversationId
-  var message = await createMessage({ ...body, conversationId })
+  const conversationId = req.params.conversationId
+  const message = await createMessage({ ...body, conversationId })
   res.send(message)
 })
 
-router.get("/:conversationId", async (req, res) => {
+router.post("/:conversationId/messages", async (req, res) => {
   try {
     const cursor: any = req.body.cursor
-    const data = await getConversationInfo(req.params.conversationId, cursor)
+    const limit = req.body.limit
+    const userId = "5f54ca16f39719fbf6a5cb43"
+
+    console.log(cursor, limit);
+    const data = await getConversationInfo(
+      userId,
+      req.params.conversationId,
+      cursor,
+      limit
+    )
     res.send(data)
   } catch (error) {
     res.status(400).send(error)
