@@ -1,6 +1,8 @@
+import _ from 'lodash'
 import { Conversation } from "../models/conversation"
 import { IMessage, Message } from "../models/message"
-import _ from 'lodash'
+import { ReadReceipt } from "../models/readReceipt"
+import { IReadMessage } from "../types/message/IReadMessage"
 
 class ConversationDTO {
   constructor(id: string, title: string, messages: MessageDTO[] = [], nextCursor: string) {
@@ -23,16 +25,18 @@ class MessageDTO {
     attachmentUrl: string,
     messageType: number,
     createdBy: string,
-    createdAt: Date,
-    isReponse: boolean
+    sentAt: Date,
+    isResponse: boolean,
+    seen: boolean
   ) {
     this.id = id
     this.text = text
     this.attachmentUrl = attachmentUrl
     this.messageType = messageType
     this.createdBy = createdBy
-    this.createdAt = createdAt
-    this.isReponse = isReponse
+    this.sentAt = sentAt
+    this.isResponse = isResponse
+    this.seen = seen
   }
 
   id: string
@@ -40,8 +44,9 @@ class MessageDTO {
   attachmentUrl: IMessage["attachmentUrl"]
   messageType: IMessage["type"]
   createdBy: IMessage["createdBy"]
-  createdAt: IMessage["createdAt"]
-  isReponse: boolean
+  sentAt: IMessage["createdAt"]
+  isResponse: boolean
+  seen: boolean
 }
 
 export interface CreateMessageInput {
@@ -53,7 +58,7 @@ export interface CreateMessageInput {
 }
 
 const getConversationInfo = async (
-  userId: string,
+  contactId: string,
   conversationId: string,
   cursor?: number,
   limit: number = 3
@@ -80,7 +85,11 @@ const getConversationInfo = async (
         nextCursor = _.last(messages)?.id
       }
 
-      const messagesDTO = messages.map((message) => {
+      var lastReadMessage = await ReadReceipt.findOne({conversationId})
+
+      const messagesDTO = _.map(messages, (message) => {
+        const seen = message.id == lastReadMessage?.messageId
+
         return new MessageDTO(
           message.id,
           message.text,
@@ -88,13 +97,14 @@ const getConversationInfo = async (
           message.type,
           message.createdBy,
           message.createdAt,
-          message.createdBy !== userId
+          message.createdBy === contactId,
+          seen
         )
       })
       return new ConversationDTO(
         conversation.id,
         conversation.title,
-        _.orderBy(messagesDTO, mes => mes.createdAt),
+        _.orderBy(messagesDTO, m => m.sentAt),
         nextCursor
       )
     }
@@ -105,7 +115,21 @@ const getConversationInfo = async (
   throw new Error("Conversation not found")
 }
 
-const getUserContacts = (id: string) => {}
+const readMessage = async (input: IReadMessage) => {
+  await ReadReceipt.findOneAndDelete({
+    conversationId: input.conversationId,
+  }, (err, doc) => {
+    console.log(err, doc);
+  })
+  
+  const readReceipt = new ReadReceipt({
+    conversationId: input.conversationId,
+    messageId: input.messageId,
+    seenerId: input.seenerId,
+  })
+
+  await readReceipt.save()
+}
 
 const createMessage = async (input: CreateMessageInput): Promise<any> => {
   var message = new Message(input)
@@ -128,4 +152,4 @@ var createConversation = async (
   return conversation
 }
 
-export { getConversationInfo, createMessage, createConversation }
+export { getConversationInfo, createMessage, createConversation, readMessage }

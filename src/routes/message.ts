@@ -26,21 +26,22 @@ router.post("/:conversationId/create", async (req, res) => {
   res.send(message)
 })
 
-router.post("/:conversationId/messages", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const cursor: any = req.body.cursor
     const limit = req.body.limit
-    const userId = "5f54ca16f39719fbf6a5cb43"
+    const contactId = req.body.contactId
+    const conversationId = req.body.conversationId
 
-    console.log(cursor, limit);
     const data = await getConversationInfo(
-      userId,
-      req.params.conversationId,
+      contactId,
+      conversationId,
       cursor,
       limit
     )
     res.send(data)
   } catch (error) {
+    console.log(error);
     res.status(400).send(error)
   }
 })

@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose"
 interface IReadReceipt extends Document {
   conversationId: string
   messageId: string
-  seenBy: string
+  seenerId: string
 }
 
 const ReadReceiptSchema = new Schema({
@@ -15,7 +15,7 @@ const ReadReceiptSchema = new Schema({
     type: String,
     required: true,
   },
-  seenBy: {
+  seenerId: {
     type: String,
   },
 })

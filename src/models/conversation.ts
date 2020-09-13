@@ -12,12 +12,12 @@ const ConversationSchema = new Schema({
     type: String,
     required: true,
   },
-  memberIds: {
-    type: [Schema.Types.ObjectId],
+  memberIds: [{
+    type: String,
     required: true,
-  },
+  }],
   createdBy: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.String,
     required: true,
   },
   createdAt: {
