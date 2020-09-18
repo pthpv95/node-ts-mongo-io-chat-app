@@ -1,6 +1,6 @@
-import express from "express"
+import express from "express";
+import { getUser, getUserContacts } from "../services/user";
 var router = express.Router()
-import { getUser, getUserContacts } from "../services/user"
 
 router.get("/:userId", async (req, res) => {
   const userId = req.params.userId
